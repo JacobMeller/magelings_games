@@ -2,13 +2,16 @@ DROP SCHEMA IF EXISTS finalproject;
 CREATE SCHEMA finalproject;
 USE finalproject;
 
-CREATE TABLE customer
+CREATE TABLE users
 (
 	fname varchar(20),
 	lname varchar(20),
-	cid integer,
-	credits float,
-	PRIMARY KEY(cid)
+	usid varchar(15),
+	email varchar(30),
+	sha varchar(20),
+	hash varchar(20),
+	role bool,
+	PRIMARY KEY(usid)
 );
 
 CREATE TABLE game
@@ -18,18 +21,40 @@ CREATE TABLE game
 	PRIMARY KEY(gameID)
 );
 
-CREATE TABLE matcheses
+CREATE TABLE reserveRoom
 (
-	gameDate date,
-	matchesID integer,
-	cid1 integer,
-	cid2 integer,
-	result varchar(5),
-	gameID integer,
-	FOREIGN KEY(cid1) REFERENCES customer(cid),
-	FOREIGN KEY(cid2) REFERENCES customer(cid),
-	FOREIGN KEY(gameID) REFERENCES game(gameID),
-	PRIMARY KEY(matchesID)
+	rrid integer,
+	reservationdate datetime,
+	eventinfo varchar(100),
+	usid varchar(15) ,
+	PRIMARY KEY (usid, rrid),
+	FOREIGN KEY (usid) REFERENCES users (usid)
+);
+
+
+CREATE TABLE gameRentalInventory
+(
+        bgid integer,
+        name varchar(25),
+        quantity integer,
+        filepath varchar(50),
+        rentalfee float,
+        description varchar(100),
+        PRIMARY KEY (bgid)
+);
+
+
+CREATE TABLE reserveBoardGame
+(
+	rbid integer,
+	pickupdate date,
+	duration integer,
+	usid varchar(15),
+	bgid integer,
+	request varchar(50), 
+	PRIMARY KEY (usid, bgid, pickupdate),
+	FOREIGN KEY (bgid) REFERENCES gameRentalInventory (bgid),
+	FOREIGN KEY (usid) REFERENCES users (usid) 
 );
 
 CREATE TABLE brand
@@ -39,6 +64,20 @@ CREATE TABLE brand
 	gameID integer,
 	FOREIGN KEY(gameID) REFERENCES game(gameID),
 	PRIMARY KEY(bid)
+);
+
+CREATE TABLE reserveBoardGame_hist
+(
+	rbid integer,
+	pickupdate date,
+	returndate date,
+	duration integer,
+	usid varchar(15),
+	bgid integer,
+	request varchar(50), 
+	PRIMARY KEY (usid, bgid, pickupdate),
+	FOREIGN KEY(bgid) REFERENCES gameRentalInventory(bgid),
+	FOREIGN KEY(usid) REFERENCES users (usid) 
 );
 
 CREATE TABLE inventory
@@ -51,20 +90,20 @@ CREATE TABLE inventory
 	bid integer,
 	location varchar(15),
 	wholesalePrice float,
-	FOREIGN KEY(bid) REFERENCES	brand(bid),
+	FOREIGN KEY(bid) REFERENCES brand(bid),
 	PRIMARY KEY(pid)
 );
 
-CREATE TABLE buys
+#update?
+CREATE TABLE preorder
 (
 	pid integer,
-	time datetime,
-	cid integer,
-	amount float,
-	paymentMethod varchar(15),
+	pickuptime datetime,
+	usid varchar(15),
+	quantity int,
 	FOREIGN KEY(pid) REFERENCES inventory(pid),
-	FOREIGN KEY(cid) REFERENCES customer(cid),
-	PRIMARY KEY(pid, time, cid)
+	FOREIGN KEY(usid) REFERENCES users (usid),
+	PRIMARY KEY(pid, pickuptime, usid)
 );
 
 CREATE TABLE stocking
@@ -88,7 +127,7 @@ CREATE TABLE cardSeries
 CREATE TABLE card
 (
 	pid integer,
-	type varchar(20),
+	cardtype varchar(20),
 	gameID integer,
 	releaseDate datetime,
 	seriesID integer,
@@ -108,7 +147,7 @@ CREATE TABLE figureSeries
 CREATE TABLE figure
 (
 	pid integer,
-	type varchar(20),
+	figtype varchar(20),
 	seriesID integer,
 	year datetime,
 	FOREIGN KEY(pid) REFERENCES inventory(pid),
@@ -119,7 +158,7 @@ CREATE TABLE figure
 CREATE TABLE other
 (
 	pid integer,
-	type varchar(20),
+	othertype varchar(20),
 	notes varchar(50),
 	FOREIGN KEY(pid) REFERENCES inventory(pid),
 	PRIMARY KEY(pid)
@@ -149,4 +188,13 @@ CREATE TABLE single
 	cond varchar(15),
 	FOREIGN KEY(pid) REFERENCES inventory(pid),
 	PRIMARY KEY(pid)
+);
+
+CREATE TABLE loginLog(
+	lid integer,
+	usid varchar(15),
+	ip varchar(20),
+	time datetime,
+	PRIMARY KEY (lid),
+	FOREIGN KEY(usid) REFERENCES users (usid)
 );
