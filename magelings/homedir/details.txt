@@ -1,0 +1,24 @@
+login.php
+
+match.php
+	--display what admin wants to put on page
+	--display .doc file on page
+
+register.php
+
+customer.php
+	--update personal information
+	--query inventory
+	--place pre-order 
+	--rent board games
+	--reserve room
+
+admin-user.php
+	--approve or deny 
+		--reservations
+		--rental
+	--alter the inventory table
+	--alter the rental table
+	--upload file to project on page
+	--manage other users?
+	--query history table
