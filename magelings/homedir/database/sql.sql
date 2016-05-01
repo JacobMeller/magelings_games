@@ -8,8 +8,8 @@ CREATE TABLE users
 	lname varchar(20),
 	usid varchar(15),
 	email varchar(30),
-	sha varchar(20),
-	hash varchar(20),
+	shpassword varchar(20),
+	salt varchar(20),
 	role bool,
 	PRIMARY KEY(usid)
 );
